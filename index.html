@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Note Taking App</title>
+	<link href="bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+			background: #000;
+			/* Full black background */
+			color: #fff;
+			/* White text */
+			padding: 10px;
+		}
+
+		.container-fluid {
+			background: #111;
+			/* Dark gray inner container */
+			padding: 15px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+		}
+
+		.column {
+			height: 85vh;
+			overflow-y: auto;
+			border-right: 1px solid #333;
+			padding: 10px;
+			background-color: #121212;
+			/* Panel area */
+		}
+
+		.list-group-item {
+			border: none;
+			border-radius: 4px;
+			margin-bottom: 4px;
+			padding: 10px;
+			transition: background 0.3s;
+			color: #fff;
+		}
+
+		.list-group-item:nth-child(odd) {
+			background-color: #1e1e1e;
+		}
+
+		.list-group-item:nth-child(even) {
+			background-color: #2a2a2a;
+		}
+
+		.alert-warning {
+			background-color: #333 !important;
+			color: #ff5252;
+			font-weight: 500;
+			border: 1px solid #ff8a80;
+		}
+
+		.btn {
+			border: none;
+			background-color: #333;
+			color: #fff;
+		}
+
+		.btn:hover {
+			background-color: #555;
+			color: #fff;
+		}
+
+		.task-item {
+			position: relative;
+			padding-right: 30px;
+		}
+
+		.delete-btn {
+			position: absolute;
+			right: 0;
+			top: 5px;
+			cursor: pointer;
+			color: #ff5252;
+		}
+
+		.ok-btn {
+			color: #00e676;
+			cursor: pointer;
+			margin-left: 10px;
+		}
+
+		textarea,
+		input,
+		select {
+			background-color: rgb(34, 34, 34) !important;
+			color: rgb(255, 255, 255) !important;
+			border: 1px solid #555 !important;
+		}
+
+		textarea::placeholder,
+		input::placeholder {
+			color: rgb(255, 255, 255);
+		}
+
+		h4,
+		h5,
+		h6 {
+			color: #00e5ff;
+		}
+
+		.custom-placeholder::placeholder {
+			color: #fff !important;
+			opacity: 1;
+		}
+
+		.clickable-item {
+			cursor: pointer;
+			border-bottom: 1px solid #444;
+			transition: background 0.2s, color 0.2s;
+		}
+
+		.clickable-item:hover {
+			background-color: #333;
+			text-decoration: underline;
+			color: #00bcd4;
+		}
+
+		.category-custom-position {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 200px;
+			/* Distance from top of page */
+			left: 10px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 170px;
+			/* Optional: set width */
+		}
+
+		.category-priorty {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 200px;
+			/* Distance from top of page */
+			left: 183px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 44px;
+			/* Optional: set width */
+		}
+
+		.task-custom-position {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 200px;
+			/* Distance from top of page */
+			left: 240px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 300px;
+			/* Optional: set width */
+		}
+
+		.task-priority {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 200px;
+			/* Distance from top of page */
+			left: 543px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 44px;
+			/* Optional: set width */
+		}
+
+		.task-details {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 200px;
+			/* Distance from top of page */
+			left: 590px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 300px;
+			/* Optional: set width */
+		}
+		
+				.start-date {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 180px;
+			/* Distance from top of page */
+			left: 924px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 124px;
+			/* Optional: set width */
+			font-size: 12px;
+		}
+		
+				.end-date {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 220px;
+			/* Distance from top of page */
+			left: 924px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 124px;
+			/* Optional: set width */
+			font-size: 12px;
+		}
+
+
+		input:focus,
+		textarea:focus,
+		select:focus {
+			outline: none;
+			box-shadow: 0 0 0 0 #ff5252 !important;
+			border-color: #ff5252 !important;
+		}
+
+		.modal-content {
+			background-color: #fff;
+			color: #000;
+		}
+
+		.modal-header,
+		.modal-body,
+		.modal-footer {
+			background-color: #fff;
+			color: #000;
+			border-color: #ddd;
+		}
+
+		.task-details {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 160px;
+			/* Distance from top of page */
+			left: 603px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 300px;
+			/* Optional: set width */
+		}
+
+		.add-task {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 188px;
+			/* Distance from top of page */
+			left: 1070px;
+			/* Distance from left of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+			width: 100px;
+			/* Optional: set width */
+		}
+
+		.panel-columns {
+			position: absolute;
+			/* Required for manual positioning */
+			top: 208px;
+			/* Distance from top of page */
+			z-index: 10;
+			/* Ensure it's above other elements */
+		}
+
+		.dashboard-position {
+			margin-top: 130px;
+			/* adjust as needed */
+		}
+
+		.styled-file-input {
+			width: 250px;
+			height: 17px;
+			border-radius: 8px;
+			background-color: #222;
+			color: #fff;
+			padding: 4px;
+			border: 1px solid #555;
+		}
+
+		.active-category {
+			background-color: #007acc !important;
+			/* Bright blue */
+			color: #fff;
+			font-weight: bold;
+			opacity: 20;
+		}
+
+		.active-task {
+			background-color: #007acc !important;
+			/* Cyan */
+			color: #fff;
+			font-weight: bold;
+			opacity: 20;
+		}
+
+		.clickable-header {
+			cursor: pointer;
+			text-decoration: underline;
+			color: #00e5ff;
+		}
+	</style>
+
+
+
+</head>
+
+<body>
+	<!-- Visible warning inside your page -->
+	<div class="alert alert-warning text-center mt-2">
+		⚠️ Newly added data will not be saved automatically. Please <strong>export</strong> your data first!
+	</div>
+
+	<div class="container-fluid">
+		<div class="row mb-3">
+			<div class="col">
+				<h4>📝 Note Taking App</h4>
+			</div>
+			<div class="col text-end">
+				<div class="d-flex justify-content-end align-items-right gap-2">
+					<input type="file" id="csvInput" class="form-control form-control-sm styled-file-input"
+						accept=".csv" />
+					<button class="btn btn-outline-secondary btn-sm" onclick="importCSV()">📥 Import</button>
+					<button class="btn btn-outline-primary btn-sm" onclick="exportCSV()">📤 Export</button>
+				</div>
+			</div>
+
+		</div>
+
+		<form id="noteForm" class="row g-2 mb-4">
+			<div class="col-md-2">
+				<input list="categoryList" class="form-control custom-placeholder category-custom-position"
+					id="category" placeholder="Category" required />
+				<datalist id="categoryList"></datalist>
+			</div>
+			<div class="col-md-1">
+				<select class="form-control category-priorty" id="categoryPriority">
+					<option value="p1">P1</option>
+					<option value="p2">P2</option>
+					<option value="p3">P3</option>
+				</select>
+			</div>
+			<div class="col-md-2">
+				<input class="form-control custom-placeholder task-custom-position" id="taskName"
+					placeholder="Task Name" required />
+			</div>
+			<div class="col-md-2">
+				<input type="date" class="form-control mb-1 start-date" id="startDate" placeholder="Start Date" />
+				<input type="date" class="form-control mb-2 end-date" id="endDate" placeholder="End Date" />
+				<textarea class="form-control custom-placeholder task-details" id="taskDetails"
+					placeholder="Task Details" rows="4"></textarea>
+			</div>
+
+			<div class="col-md-1">
+				<select class="form-control task-priority" id="taskPriority">
+					<option value="p1">P1</option>
+					<option value="p2">P2</option>
+					<option value="p3">P3</option>
+				</select>
+			</div>
+			<div class="col-md-2">
+				<button class="btn btn-success add-task" type="submit">➕ Add Task</button>
+			</div>
+		</form>
+
+
+		<div class="row dashboard-position">
+			<div class="col-md-2 column">
+				<div class="d-flex justify-content-between align-items-center">
+					<h6 class="clickable-header" onclick="toggleCategorySort()">📂 Categories</h6>
+					<select id="categoryPriorityFilter" class="form-select form-select-sm w-auto"
+						onchange="loadCategories()">
+						<option value="">All</option>
+						<option value="p1">P1</option>
+						<option value="p2">P2</option>
+						<option value="p3">P3</option>
+					</select>
+				</div>
+				<ul id="categoryPanel" class="list-group mt-2"></ul>
+			</div>
+
+			<div class="col-md-3 column">
+				<div class="d-flex justify-content-between align-items-center">
+					<h6 class="clickable-header" onclick="toggleTaskSort()">📋 Tasks</h6>
+					<select id="taskPriorityFilter" class="form-select form-select-sm w-auto" onchange="loadTasks()">
+						<option value="">All</option>
+						<option value="p1">P1</option>
+						<option value="p2">P2</option>
+						<option value="p3">P3</option>
+					</select>
+				</div>
+				<ul id="taskPanel" class="list-group mt-2"></ul>
+			</div>
+
+			<div class="col-md-4 column">
+				<h6>🛠️ Task Details</h6>
+				<div id="taskDetailArea"></div>
+			</div>
+
+			<div class="col-md-3 column">
+				<div class="d-flex justify-content-between align-items-center">
+					<h6 class="clickable-header" onclick="toggleCompletedSort()">✅ Completed</h6>
+					<select id="completedPriorityFilter" class="form-select form-select-sm w-auto"
+						onchange="loadCompleted()">
+						<option value="">All</option>
+						<option value="p1">P1</option>
+						<option value="p2">P2</option>
+						<option value="p3">P3</option>
+					</select>
+				</div>
+				<ul id="finishedPanel" class="list-group mt-2"></ul>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Confirm Completion Modal -->
+	<div class="modal fade" id="confirmCompleteModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">Confirm Completion</div>
+				<div class="modal-body">Are you sure to proceed for completion?</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+					<button class="btn btn-success" id="confirmYesBtn">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Confirm Import Modal -->
+	<div class="modal fade" id="confirmImportModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">Confirm Import</div>
+				<div class="modal-body">
+					⚠️ Have you exported your latest data to save perminently? <br />
+					If no new data present/added, you can proceed to import <br />
+					All latest changes will be erased if you import
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button class="btn btn-danger" id="confirmImportYesBtn">Proceed with Import</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Delete Task Modal -->
+	<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">Confirm Deletion</div>
+				<div class="modal-body">Are you sure you want to delete this task?</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Task Updated Modal -->
+	<div class="modal fade" id="taskUpdatedModal" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">✅ Task Updated</h5>
+				</div>
+				<div class="modal-body">
+					Your changes have been saved successfully.
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<!-- Confirm Reopen Modal -->
+	<div class="modal fade" id="confirmReopenModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">Confirm Reopen</div>
+				<div class="modal-body">
+					Are you sure you want to reopen this task?
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+					<button class="btn btn-primary" id="confirmReopenBtn">Yes, Reopen</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<!-- Reminder Modal for Export -->
+<div class="modal fade" id="exportReminderModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">📤 Export Reminder</h5>
+      </div>
+      <div class="modal-body">
+        ✅ Task added successfully.<br>
+        ⚠️ Don't forget to <strong>export</strong> your data to save it!
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+	<audio id="clickSound" src="#" preload="auto"></audio>
+
+	<script src="bootstrap.bundle.min.js"></script>
+	<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js';
+
+  // 🔥 Replace with your credentials
+  const SUPABASE_URL = 'https://dihvelmcocpmixjkcvlk.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpaHZlbG1jb2NwbWl4amtjdmxrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxNDYwOTEsImV4cCI6MjA3NzcyMjA5MX0.a4H0kt4fZIBxxppWcXeeAvRKMyqTorb1Yq_biYe8jvA';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let selectedCategory = null;
+  let selectedTaskId = null;
+
+  let categorySortAsc = true;
+  let taskSortAsc = true;
+  let completedSortAsc = true;
+
+  function toggleCategorySort() {
+    categorySortAsc = !categorySortAsc;
+    loadCategories();
+  }
+
+  function toggleTaskSort() {
+    taskSortAsc = !taskSortAsc;
+    loadTasks();
+  }
+
+  function toggleCompletedSort() {
+    completedSortAsc = !completedSortAsc;
+    loadCompleted();
+  }
+
+  // ✅ Add a task to Supabase
+  document.getElementById("noteForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const category = document.getElementById("category").value;
+    const catPriority = document.getElementById("categoryPriority").value;
+    const task = document.getElementById("taskName").value;
+    const details = document.getElementById("taskDetails").value;
+    const taskPriority = document.getElementById("taskPriority").value;
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+
+    const { error } = await supabase.from("notes").insert([
+      {
+        category, catPriority, task, details, taskPriority,
+        startDate, endDate, pending: '', completed: '', status: 'open'
+      }
+    ]);
+
+    if (error) {
+      alert("Error adding task: " + error.message);
+      return;
+    }
+
+    this.reset();
+    loadCategories();
+    if (selectedCategory === category) loadTasks();
+
+    new bootstrap.Modal(document.getElementById("exportReminderModal")).show();
+  });
+
+  // ✅ Load all categories from Supabase
+  async function loadCategories() {
+    const filter = document.getElementById("categoryPriorityFilter").value;
+    const { data, error } = await supabase.from("notes").select("*");
+
+    if (error) return console.error(error);
+
+    const filtered = data.filter(d => d.status === 'open' && (!filter || d.catPriority === filter));
+
+    const grouped = {};
+    filtered.forEach(note => {
+      if (!grouped[note.category]) grouped[note.category] = note.catPriority;
+      else {
+        const order = { p1: 1, p2: 2, p3: 3 };
+        if (order[note.catPriority] < order[grouped[note.category]]) grouped[note.category] = note.catPriority;
+      }
+    });
+
+    let categories = Object.entries(grouped).map(([category, catPriority]) => ({ category, catPriority }));
+    categories.sort((a, b) => categorySortAsc ? a.category.localeCompare(b.category) : b.category.localeCompare(a.category));
+
+    const panel = document.getElementById("categoryPanel");
+    const datalist = document.getElementById("categoryList");
+    panel.innerHTML = "";
+    datalist.innerHTML = "";
+
+    categories.forEach(({ category }) => {
+      const li = document.createElement("li");
+      li.textContent = category;
+      li.className = "list-group-item fade-in task-item";
+      if (selectedCategory === category) li.classList.add("active-category");
+      li.onclick = () => {
+        selectedCategory = category;
+        selectedTaskId = null;
+        loadTasks();
+        loadCategories();
+      };
+      panel.appendChild(li);
+
+      const opt = document.createElement("option");
+      opt.value = category;
+      datalist.appendChild(opt);
+    });
+  }
+
+  // ✅ Load tasks for selected category
+  async function loadTasks() {
+    const panel = document.getElementById("taskPanel");
+    panel.innerHTML = "";
+    const filter = document.getElementById("taskPriorityFilter").value;
+
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*")
+      .eq("category", selectedCategory)
+      .eq("status", "open");
+
+    if (error) return console.error(error);
+
+    const tasks = filter ? data.filter(t => t.taskPriority === filter) : data;
+    tasks.sort((a, b) => taskSortAsc ? a.task.localeCompare(b.task) : b.task.localeCompare(a.task));
+
+    tasks.forEach(task => {
+      const li = document.createElement("li");
+      li.className = "list-group-item fade-in task-item";
+      if (selectedTaskId === task.id) li.classList.add("active-task");
+      li.innerHTML = `<strong>${task.task}</strong> (${task.taskPriority})
+        <span class="delete-btn" onclick="deleteTask(${task.id}, event)">🗑</span>
+        <span class="ok-btn" onclick="completeTask(${task.id})">✔</span>`;
+      li.onclick = (e) => {
+        if (e.target.tagName !== "SPAN") {
+          selectedTaskId = task.id;
+          showTaskDetails(task);
+          loadTasks();
+        }
+      };
+      panel.appendChild(li);
+    });
+  }
+
+  // ✅ Show details and allow updates
+  function showTaskDetails(task) {
+    const area = document.getElementById("taskDetailArea");
+    area.innerHTML = `
+      <div><strong>${task.task}</strong> - ${task.details}</div>
+      <div><small>🕒 <strong>Start:</strong> ${task.startDate || '—'} | <strong>End:</strong> ${task.endDate || '—'}</small></div>
+      <div class="mt-2">
+        <label>Pending:</label>
+        <textarea class="form-control mb-2" rows="3" id="pending">${task.pending}</textarea>
+        <label>Completed:</label>
+        <textarea class="form-control" rows="3" id="completed">${task.completed}</textarea>
+        <button class="btn btn-primary btn-sm mt-2" onclick="saveTaskUpdates(${task.id})">💾 Save Updates</button>
+      </div>`;
+  }
+
+  // ✅ Save updates to Supabase
+  window.saveTaskUpdates = async function (id) {
+    const pending = document.getElementById("pending").value;
+    const completed = document.getElementById("completed").value;
+    const { error } = await supabase.from("notes").update({ pending, completed }).eq("id", id);
+    if (error) return alert("Error saving: " + error.message);
+    new bootstrap.Modal(document.getElementById("taskUpdatedModal")).show();
+  };
+
+  // ✅ Delete task
+  window.deleteTask = async function (id, e) {
+    e.stopPropagation();
+    if (!confirm("Delete this task?")) return;
+    const { error } = await supabase.from("notes").delete().eq("id", id);
+    if (error) alert("Error deleting: " + error.message);
+    loadTasks();
+  };
+
+  // ✅ Mark task completed
+  window.completeTask = async function (id) {
+    const { error } = await supabase.from("notes").update({ status: "done" }).eq("id", id);
+    if (error) alert("Error updating: " + error.message);
+    loadTasks();
+    loadCompleted();
+  };
+
+  // ✅ Load completed tasks
+  async function loadCompleted() {
+    const panel = document.getElementById("finishedPanel");
+    panel.innerHTML = "";
+    const filter = document.getElementById("completedPriorityFilter").value;
+    const { data, error } = await supabase.from("notes").select("*").eq("status", "done");
+    if (error) return console.error(error);
+    const done = filter ? data.filter(t => t.taskPriority === filter) : data;
+    done.sort((a, b) => completedSortAsc ? a.task.localeCompare(b.task) : b.task.localeCompare(a.task));
+    done.forEach(task => {
+      const li = document.createElement("li");
+      li.className = "list-group-item fade-in task-item";
+      li.innerHTML = `<strong>${task.task}</strong> (${task.category})
+        <button class="btn btn-sm btn-outline-dark float-end" onclick="reopenTask(${task.id})">↩ Reopen</button>`;
+      panel.appendChild(li);
+    });
+  }
+
+  // ✅ Reopen a completed task
+  window.reopenTask = async function (id) {
+    const { error } = await supabase.from("notes").update({ status: "open" }).eq("id", id);
+    if (error) alert("Error reopening: " + error.message);
+    loadCategories();
+    loadTasks();
+    loadCompleted();
+  };
+
+  // ✅ Initial load
+  loadCategories();
+  loadCompleted();
+</script>
+
+</body>
+
+</html>
