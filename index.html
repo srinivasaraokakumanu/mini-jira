@@ -125,7 +125,7 @@
 		.category-custom-position {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 200px;
+			top: 120px;
 			/* Distance from top of page */
 			left: 10px;
 			/* Distance from left of page */
@@ -138,7 +138,7 @@
 		.category-priorty {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 200px;
+			top: 120px;
 			/* Distance from top of page */
 			left: 183px;
 			/* Distance from left of page */
@@ -151,7 +151,7 @@
 		.task-custom-position {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 200px;
+			top: 120px;
 			/* Distance from top of page */
 			left: 240px;
 			/* Distance from left of page */
@@ -164,7 +164,7 @@
 		.task-priority {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 200px;
+			top: 120px;
 			/* Distance from top of page */
 			left: 543px;
 			/* Distance from left of page */
@@ -177,7 +177,7 @@
 		.task-details {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 200px;
+			top: 120px;
 			/* Distance from top of page */
 			left: 590px;
 			/* Distance from left of page */
@@ -190,7 +190,7 @@
 				.start-date {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 180px;
+			top: 100px;
 			/* Distance from top of page */
 			left: 924px;
 			/* Distance from left of page */
@@ -204,7 +204,7 @@
 				.end-date {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 220px;
+			top: 150px;
 			/* Distance from top of page */
 			left: 924px;
 			/* Distance from left of page */
@@ -240,7 +240,7 @@
 		.task-details {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 160px;
+			top: 80px;
 			/* Distance from top of page */
 			left: 603px;
 			/* Distance from left of page */
@@ -253,7 +253,7 @@
 		.add-task {
 			position: absolute;
 			/* Required for manual positioning */
-			top: 188px;
+			top: 110px;
 			/* Distance from top of page */
 			left: 1070px;
 			/* Distance from left of page */
@@ -276,6 +276,7 @@
 			margin-top: 130px;
 			/* adjust as needed */
 		}
+		
 
 		.styled-file-input {
 			width: 250px;
@@ -315,27 +316,27 @@
 </head>
 
 <body>
-	<!-- Visible warning inside your page -->
-	<div class="alert alert-warning text-center mt-2">
-		⚠️ Newly added data will not be saved automatically. Please <strong>export</strong> your data first!
-	</div>
 
-	<div class="container-fluid">
-		<div class="row mb-3">
-			<div class="col">
-				<h4>📝 Note Taking App</h4>
-			</div>
-			<div class="col text-end">
-				<div class="d-flex justify-content-end align-items-right gap-2">
-					<input type="file" id="csvInput" class="form-control form-control-sm styled-file-input"
-						accept=".csv" />
-					<button class="btn btn-outline-secondary btn-sm" onclick="importCSV()">📥 Import</button>
-					<button class="btn btn-outline-primary btn-sm" onclick="exportCSV()">📤 Export</button>
-				</div>
-			</div>
+  <!-- Registration Form -->
+  <div id="registration-form">
+    <h2>Register</h2>
+    <input type="text" id="reg-userId" placeholder="Enter User ID" required />
+    <input type="password" id="reg-password" placeholder="Enter Password" required />
+    <button id="register-btn">Register</button>
+  </div>
 
-		</div>
+  <!-- Login Form -->
+  <div id="login-form">
+    <h2>Login</h2>
+    <input type="text" id="login-userId" placeholder="Enter User ID" required />
+    <input type="password" id="login-password" placeholder="Enter Password" required />
+    <button id="login-btn">Login</button>
+  </div>
 
+  <!-- Dashboard -->
+  <div id="dashboard" style="display: none;">
+    <h2>Welcome to Note Taking App</h2>
+    <button id="logout-btn">Logout</button>
 		<form id="noteForm" class="row g-2 mb-4">
 			<div class="col-md-2">
 				<input list="categoryList" class="form-control custom-placeholder category-custom-position"
@@ -519,6 +520,8 @@
   </div>
 </div>
 
+  </div>
+	
 
 	<audio id="clickSound" src="#" preload="auto"></audio>
 
@@ -538,6 +541,91 @@
   let categorySortAsc = true;
   let taskSortAsc = true;
   let completedSortAsc = true;
+  let currentUser = null;
+  
+  
+  
+    // Registration function: Store userId and password in 'notes' table
+    async function registerUser() {
+      const userId = document.getElementById('reg-userId').value;
+      const password = document.getElementById('reg-password').value;
+
+      if (!userId || !password) {
+        alert('Please enter both User ID and Password.');
+        return;
+      }
+
+      try {
+        // Insert the new user into the 'notes' table
+        const { data, error } = await supabase
+          .from('notes')
+          .insert([
+            { userId: userId, password: password }
+          ]);
+
+        if (error) {
+          alert('Registration failed: ' + error.message);
+        } else {
+          alert('Registration successful!');
+          document.getElementById('registration-form').style.display = 'none';
+          document.getElementById('login-form').style.display = 'block';  // Show login form
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        alert('Something went wrong. Please try again later.');
+      }
+    }
+
+    // Login function: Verify userId and password from 'notes' table
+    async function loginUser() {
+      const userId = document.getElementById('login-userId').value;
+      const password = document.getElementById('login-password').value;
+
+      if (!userId || !password) {
+        alert('Please enter both User ID and Password.');
+        return;
+      }
+
+      try {
+        // Check if the user exists and password matches
+        const { data, error } = await supabase
+          .from('notes')
+          .select('userId, password, task, details, status')  // Select relevant columns from 'notes'
+          .eq('userId', userId)
+          .eq('password', password)  // Validate password match
+          .single();  // We expect only one record
+
+        if (error || !data) {
+          alert('Login failed: Invalid userId or password.');
+        } else {
+          alert('Logged in successfully!');
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('registration-form').style.display = 'none';  // Hide registration form
+          document.getElementById('dashboard').style.display = 'block';  // Show dashboard
+         currentUser = userId;
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        alert('Something went wrong. Please try again later.');
+      }
+    }
+
+    // Logout function
+    function logoutUser() {
+
+  // Hide the dashboard
+  document.getElementById('dashboard').style.display = 'none';
+
+  // Show both the login and registration forms again
+  document.getElementById('login-form').style.display = 'block';
+  document.getElementById('registration-form').style.display = 'block';
+}
+    window.onload = function() {
+      // Add event listeners for Register, Login, and Logout buttons
+      document.getElementById('register-btn').addEventListener('click', registerUser);
+      document.getElementById('login-btn').addEventListener('click', loginUser);
+      document.getElementById('logout-btn').addEventListener('click', logoutUser);
+    };
 
   function toggleCategorySort() {
     categorySortAsc = !categorySortAsc;
@@ -568,7 +656,7 @@
 
     const { error } = await supabase.from("notes").insert([
       {
-        category, catPriority, task, details, taskPriority,
+        userId: currentUser, category, catPriority, task, details, taskPriority,
         startDate, endDate, pending: '', completed: '', status: 'open'
       }
     ]);
